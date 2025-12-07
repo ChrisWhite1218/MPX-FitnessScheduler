@@ -18,7 +18,7 @@ class HomeViewModel extends ChangeNotifier {
   bool _loading = false;
   bool get loading => _loading;
 
-  /// Fetch all classes from Firestore
+  // Fetch all classes from Firestore
   Future<void> fetchClasses() async {
     _loading = true;
     notifyListeners();

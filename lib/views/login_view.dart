@@ -38,42 +38,69 @@ class _LoginViewState extends State<LoginView> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  TextFormField(
-                    controller: _emailCtrl,
-                    decoration: const InputDecoration(labelText: 'Email'),
-                    keyboardType: TextInputType.emailAddress,
-                    validator: (v) => (v == null || v.isEmpty) ? 'Enter email' : null,
+                  Semantics(
+                    label: 'Email',
+                    hint: 'Enter your email',
+                    textField: true,
+                    value: _emailCtrl.text,
+                    child: TextFormField(
+                      controller: _emailCtrl,
+                      decoration: const InputDecoration(labelText: 'Email'),
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (v) => (v == null || v.isEmpty) ? 'Enter email' : null,
+                    ),
                   ),
                   const SizedBox(height: 12),
-                  TextFormField(
-                    controller: _pwCtrl,
-                    decoration: const InputDecoration(labelText: 'Password'),
-                    obscureText: true,
-                    validator: (v) => (v == null || v.length < 6) ? '6+ chars' : null,
+                  Semantics(
+                    label: 'Password',
+                    hint: 'Enter your password. Minimum 6 characters',
+                    child: ExcludeSemantics(
+                      child: TextFormField(
+                        controller: _pwCtrl,
+                        decoration: const InputDecoration(labelText: 'Password'),
+                        obscureText: true,
+                        validator: (v) => (v == null || v.length < 6) ? '6+ chars' : null,
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 16),
                   if (vm.errorMessage.isNotEmpty)
-                    Text(vm.errorMessage, style: const TextStyle(color: Colors.red)),
+                    Semantics(
+                      label: 'Error',
+                      value: vm.errorMessage,
+                      liveRegion: true,
+                      child: Text(vm.errorMessage, style: const TextStyle(color: Colors.red)),
+                    ),
                   const SizedBox(height: 8),
                   vm.isLoading
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                    onPressed: () async {
-                      if (!_formKey.currentState!.validate()) return;
+                      ? const Center(child: CircularProgressIndicator())
+                      : Semantics(
+                          label: 'Sign In',
+                          hint: 'Double tap to sign in',
+                          button: true,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (!_formKey.currentState!.validate()) return;
 
-                      final ok = await vm.signIn(_emailCtrl.text, _pwCtrl.text);
-                      if (ok) {
-                        Navigator.of(context).pushReplacementNamed('/home');
-                      }
-                    },
-                    child: const Text('Sign In'),
-                  ),
+                              final ok = await vm.signIn(_emailCtrl.text, _pwCtrl.text);
+                              if (ok) {
+                                Navigator.of(context).pushReplacementNamed('/home');
+                              }
+                            },
+                            child: const Text('Sign In'),
+                          ),
+                        ),
                   const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const RegisterView()),
+                  Semantics(
+                    label: 'Create account',
+                    hint: 'Double tap to create a new account',
+                    button: true,
+                    child: TextButton(
+                      onPressed: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const RegisterView()),
+                      ),
+                      child: const Text('Create account'),
                     ),
-                    child: const Text('Create account'),
                   ),
                 ],
               ),

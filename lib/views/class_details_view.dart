@@ -39,81 +39,116 @@ class _ClassDetailsViewState extends State<ClassDetailsView> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              widget.classModel.name,
-              style: const TextStyle(
-                fontSize: 26,
-                fontWeight: FontWeight.bold,
+            Semantics(
+              label: 'Class name: ${widget.classModel.name}',
+              header: true,
+              child: ExcludeSemantics(
+                child: Text(
+                  widget.classModel.name,
+                  style: const TextStyle(
+                    fontSize: 26,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              "Instructor: ${widget.classModel.instructor}",
-              style: const TextStyle(fontSize: 18),
+            Semantics(
+              label: 'Instructor: ${widget.classModel.instructor}',
+              child: ExcludeSemantics(
+                child: Text(
+                  "Instructor: ${widget.classModel.instructor}",
+                  style: const TextStyle(fontSize: 18),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
-            Text(
-              "Time: $formattedTime",
-              style: const TextStyle(fontSize: 16),
+            Semantics(
+              label: 'Time: $formattedTime',
+              child: ExcludeSemantics(
+                child: Text(
+                  "Time: $formattedTime",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
             ),
             const SizedBox(height: 8),
-            Text(
-              "Difficulty (1-10): ${widget.classModel.points}",
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
+            Semantics(
+              label: 'Difficulty: ${widget.classModel.points} out of 10',
+              child: ExcludeSemantics(
+                child: Text(
+                  "Difficulty (1-10): ${widget.classModel.points}",
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
               ),
             ),
             const SizedBox(height: 12),
-            Text(
-              widget.classModel.description,
-              style: const TextStyle(fontSize: 16),
+            Semantics(
+              label: 'Description: ${widget.classModel.description}',
+              child: ExcludeSemantics(
+                child: Text(
+                  widget.classModel.description,
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
-            Text(
-              "Capacity: ${widget.classModel.capacity}",
-              style: const TextStyle(fontSize: 16),
+            Semantics(
+              label: 'Capacity: ${widget.classModel.capacity} spots',
+              child: ExcludeSemantics(
+                child: Text(
+                  "Capacity: ${widget.classModel.capacity}",
+                  style: const TextStyle(fontSize: 16),
+                ),
+              ),
             ),
             const SizedBox(height: 20),
             isLoading
                 ? const Center(child: CircularProgressIndicator())
-                : ElevatedButton(
-                    onPressed: () async {
-                      setState(() => isLoading = true);
-                      try {
-                        final user = Provider.of<AuthViewModel>(
-                                context,
-                                listen: false)
-                            .userModel;
-                        if (user == null) return;
+                : Semantics(
+                    button: true,
+                    label: 'Sign up for this class',
+                    child: ElevatedButton(
+                      onPressed: () async {
+                        setState(() => isLoading = true);
+                        try {
+                          final user = Provider.of<AuthViewModel>(
+                                  context,
+                                  listen: false)
+                              .userModel;
+                          if (user == null) return;
 
-                        final homeVm = Provider.of<HomeViewModel>(
-                                context,
-                                listen: false);
+                          final homeVm = Provider.of<HomeViewModel>(
+                                  context,
+                                  listen: false);
 
-                        if (widget.classModel.attendees.contains(user.uid)) {
+                          if (widget.classModel.attendees.contains(user.uid)) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Already signed up')),
+                            );
+                          } else {
+                            await homeVm.toggleEnrollment(
+                                widget.classModel, user);
+
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                  content: Text('Signed up for class')),
+                            );
+                          }
+                        } catch (e) {
                           ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Already signed up')),
+                            SnackBar(content: Text('Error: $e')),
                           );
-                        } else {
-                          await homeVm.toggleEnrollment(
-                              widget.classModel, user);
-                            
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                                content: Text('Signed up for class')),
-                          );
+                        } finally {
+                          setState(() => isLoading = false);
                         }
-                      } catch (e) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text('Error: $e')),
-                        );
-                      } finally {
-                        setState(() => isLoading = false);
-                      }
-                    },
-                    child: const Text('Sign Up'),
+                      },
+                      child: const Text('Sign Up'),
+                    ),
                   ),
           ],
         ),

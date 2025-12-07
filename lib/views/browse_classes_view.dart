@@ -16,7 +16,12 @@ class BrowseClassesView extends StatelessWidget {
         title: const Text("Browse Classes"),
       ),
       body: vm.allClasses.isEmpty
-          ? const Center(child: Text("No classes available"))
+          ? Center(
+              child: Semantics(
+                label: "No classes available",
+                child: Text("No classes available"),
+              ),
+            )
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: vm.allClasses.length,
@@ -36,18 +41,26 @@ class BrowseClassesView extends StatelessWidget {
                       )
                     ],
                   ),
-                  child: ListTile(
-                    title: Text(c.name, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    subtitle: Text("${c.instructor} - ${c.capacity} spots"),
-                    trailing: Text("${c.points} pts", style: const TextStyle(color: Colors.green)),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => ClassDetailsView(classModel: c),
-                        ),
-                      );
-                    },
+                  child: Semantics(
+                    label:
+                        "${c.name}, Instructor: ${c.instructor}, Capacity: ${c.capacity} spots, Difficulty: ${c.points} points",
+                    button: true,
+                    child: ListTile(
+                      title: Text(c.name,
+                          style:
+                              const TextStyle(fontWeight: FontWeight.bold)),
+                      subtitle: Text("${c.instructor} - ${c.capacity} spots"),
+                      trailing: Text("${c.points} pts",
+                          style: const TextStyle(color: Colors.green)),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => ClassDetailsView(classModel: c),
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 );
               },
