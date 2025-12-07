@@ -58,7 +58,7 @@ class _ClassDetailsViewState extends State<ClassDetailsView> {
             ),
             const SizedBox(height: 8),
             Text(
-              "Points: ${widget.classModel.points}",
+              "Difficulty (1-10): ${widget.classModel.points}",
               style: const TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w500,

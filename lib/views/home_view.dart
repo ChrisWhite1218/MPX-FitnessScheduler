@@ -83,20 +83,12 @@ class _HomeViewState extends State<HomeView> {
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            "Points: ${user?.points ?? 0}",
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.black54,
-                            ),
-                          ),
                         ],
                       ),
                     ],
                   ),
 
                   const SizedBox(height: 32),
-
                   const Text(
                     "Upcoming Classes",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -116,31 +108,38 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      children: homeVm.upcomingClasses.map((c) {
-                        return GestureDetector(
-                          onLongPress: () {
-                            if (user != null) homeVm.removeClassFromUser(c.id, user);
-                          },
-                          child: ListTile(
-                            title: Text(c.name),
-                            leading: const Icon(Icons.event),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => ClassDetailsView(classModel: c),
+                    child: homeVm.upcomingClasses.isEmpty
+                        ? const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              "None",
+                              style: TextStyle(fontSize: 16, color: Colors.black54),
+                            ),
+                          )
+                        : Column(
+                            children: homeVm.upcomingClasses.map((c) {
+                              return GestureDetector(
+                                onLongPress: () {
+                                  if (user != null) homeVm.removeClassFromUser(c.id, user);
+                                },
+                                child: ListTile(
+                                  title: Text(c.name),
+                                  leading: const Icon(Icons.event),
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => ClassDetailsView(classModel: c),
+                                      ),
+                                    );
+                                  },
                                 ),
                               );
-                            },
+                            }).toList(),
                           ),
-                        );
-                      }).toList(),
-                    ),
                   ),
 
                   const SizedBox(height: 32),
-
                   const Text(
                     "Completed Classes",
                     style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
@@ -160,15 +159,24 @@ class _HomeViewState extends State<HomeView> {
                         ),
                       ],
                     ),
-                    child: Column(
-                      children: homeVm.completedClasses.map((c) {
-                        return ListTile(
-                          title: Text(c.name),
-                          leading: const Icon(Icons.check_circle, color: Colors.green),
-                        );
-                      }).toList(),
-                    ),
+                    child: homeVm.completedClasses.isEmpty
+                        ? const Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: Text(
+                              "None",
+                              style: TextStyle(fontSize: 16, color: Colors.black54),
+                            ),
+                          )
+                        : Column(
+                            children: homeVm.completedClasses.map((c) {
+                              return ListTile(
+                                title: Text(c.name),
+                                leading: const Icon(Icons.check_circle, color: Colors.green),
+                              );
+                            }).toList(),
+                          ),
                   ),
+
                 ],
               ),
             ),
