@@ -56,7 +56,7 @@ class HomeViewModel extends ChangeNotifier {
       await userRef.update({
         'signedUpClasses': FieldValue.arrayRemove([classId])
       });
-
+      // Fetch the updated user
       final updatedUserDoc = await userRef.get();
       final updatedUser = UserModel.fromMap(updatedUserDoc.data()!);
 
@@ -72,7 +72,7 @@ class HomeViewModel extends ChangeNotifier {
 
 
 
-  /// Load upcoming and completed classes for a user
+  // Load upcoming and completed classes for a user
   Future<void> loadClasses(UserModel user) async {
     _loading = true;
     notifyListeners();
@@ -101,44 +101,47 @@ class HomeViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Toggle enrollment: sign up or unenroll
-Future<void> toggleEnrollment(ClassModel classModel, UserModel user) async {
-  if (classModel.id.isEmpty || user.uid.isEmpty) {
-    debugPrint('ERROR: classModel.id or user.uid is empty!');
-    return;
-  }
-
-  debugPrint('Sign Up button pressed for class ${classModel.name}');
-  debugPrint('Current attendees: ${classModel.attendees}');
-  debugPrint('User ID: ${user.uid}');
-
-  final classRef = _db.collection('classes').doc(classModel.id);
-  final userRef = _db.collection('users').doc(user.uid);
-
-  final isEnrolled = classModel.attendees.contains(user.uid);
-
+  // Toggle enrollment: sign up or unenroll
+Future<UserModel?> toggleEnrollment(ClassModel classModel, UserModel user) async {
   try {
+    final classRef = _db.collection('classes').doc(classModel.id);
+    final userRef = _db.collection('users').doc(user.uid);
+
+    final isEnrolled = user.signedUpClasses.contains(classModel.id);
+
     if (isEnrolled) {
-      debugPrint('User already signed up.');
-      return; // do nothing
+      debugPrint('User already enrolled');
+      return null;
     }
+
+    // Add class to user's signedUpClasses
+    await userRef.update({
+      'signedUpClasses': FieldValue.arrayUnion([classModel.id]),
+    });
 
     // Add user to class attendees
     await classRef.update({
-      'attendees': FieldValue.arrayUnion([user.uid])
+      'attendees': FieldValue.arrayUnion([user.uid]),
     });
 
-    // Add class ID to user's signedUpClasses
-    await userRef.update({
-      'signedUpClasses': FieldValue.arrayUnion([classModel.id])
-    });
+    // Add points to the user
+    // int newPoints = user.points + classModel.points;
+    // await userRef.update({'points': newPoints});
 
-    debugPrint('User successfully signed up.');
+    // Fetch the updated user
+    final updatedUserDoc = await userRef.get();
+    final updatedUser = UserModel.fromMap(updatedUserDoc.data()!);
 
-    // Reload classes for user
-    await loadClasses(user);
+    // Reload classes for updated user
+    await loadClasses(updatedUser);
+
+    return updatedUser;
   } catch (e) {
-    debugPrint('Error signing up: $e');
+    debugPrint("Error signing up: $e");
+    return null;
   }
 }
+
+
+
 }
