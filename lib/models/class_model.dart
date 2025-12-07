@@ -1,3 +1,5 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class ClassModel {
   final String id;
   final String name;
@@ -5,6 +7,7 @@ class ClassModel {
   final String instructor;
   final DateTime time;
   final int capacity;
+  final int points;
   final List<String> attendees;
 
   ClassModel({
@@ -14,32 +17,34 @@ class ClassModel {
     required this.instructor,
     required this.time,
     required this.capacity,
+    this.points = 0,
     List<String>? attendees,
   }) : attendees = attendees ?? [];
 
-  // Convert ClassModel -> Firestore map
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'name': name,
-      'description': description,
-      'instructor': instructor,
-      'time': time.toIso8601String(),
-      'capacity': capacity,
-      'attendees': attendees,
-    };
-  }
-
-  // Convert Firestore map -> ClassModel
-  factory ClassModel.fromMap(Map<String, dynamic> map) {
+  factory ClassModel.fromMap(Map<String, dynamic> map, {String? docId}) {
     return ClassModel(
-      id: map['id'] ?? '',
+      id: docId ?? map['id'] ?? '',
       name: map['name'] ?? '',
       description: map['description'] ?? '',
       instructor: map['instructor'] ?? '',
-      time: DateTime.parse(map['time'] ?? DateTime.now().toIso8601String()),
+      time: (map['time'] as Timestamp?)?.toDate() ?? DateTime.now(),
       capacity: map['capacity'] ?? 0,
       attendees: List<String>.from(map['attendees'] ?? []),
+      points: map['points'] ?? 0,
     );
+  }
+
+
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'description': description,
+      'instructor': instructor,
+      'time': Timestamp.fromDate(time),
+      'capacity': capacity,
+      'points': points,
+      'attendees': attendees,
+    };
   }
 }

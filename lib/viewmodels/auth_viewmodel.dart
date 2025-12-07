@@ -4,7 +4,6 @@ import '../data/auth_repository.dart';
 import '../models/user_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class AuthViewModel extends ChangeNotifier {
   final AuthRepository _repo;
   bool _isLoading = false;
@@ -28,6 +27,12 @@ class AuthViewModel extends ChangeNotifier {
   }
 
   Future<void> _loadUserModel() async {
+    if (_user == null) return;
+    _userModel = await _repo.fetchUserModel(_user!.uid);
+    notifyListeners();
+  }
+
+  Future<void> refreshUser() async {
     if (_user == null) return;
     _userModel = await _repo.fetchUserModel(_user!.uid);
     notifyListeners();
