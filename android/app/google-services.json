@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "663175066500",
+    "project_id": "pittcampusfitness",
+    "storage_bucket": "pittcampusfitness.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:663175066500:android:21cca617064bfa66eaa3d1",
+        "android_client_info": {
+          "package_name": "com.example.mpx"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB5Jre8c5RlWMS3uV4f5-QXN9EH6mP4K_8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
